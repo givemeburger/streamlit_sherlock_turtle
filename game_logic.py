@@ -56,32 +56,22 @@ class TurtleSoupGame:
             return f"🚫 AI 서비스를 사용할 수 없습니다: {self.api_error}"
 
         prompt = f"""
-        당신은 '바다거북수프' 게임의 게임마스터입니다.
+You are the judge of the Sea Turtle Soup game.  
 
         질문: {self.current_episode.question}
         줄거리: {self.current_episode.answer}
         
-        게임의 질문과 줄거리의 전체 내용을 파악하고 사용자의 질문에 다음과 같이 응답하세요.
+For each question, you must reply with **exactly one** of the following options:  
 
-## Possible Outputs
-[
-"네.",
-"네, 아주 중요한 질문입니다.",
-"아니오.",
-"아니오. 중요하지 않습니다.",
-"예, 아니오로 대답할 수 없는 질문입니다.",
-]
+- "네." → True and related to the story  
+- "네, 아주 중요한 질문입니다." → True and highly related to the story  
+- "아니오." → False but related to the story  
+- "아니오. 중요하지 않습니다." → False and unrelated to the story  
+- "예, 아니오로 대답할 수 없는 질문입니다." → The question cannot be answered with Yes/No 
 
-## Response Rules
-If the question is moving in the right direction → "네."
-
-If it’s on the right track and reveals a critical clue → "네, 아주 중요한 질문입니다."
-
-If it’s going in the wrong direction → "아니오."
-
-If it’s irrelevant or unimportant → "아니오. 중요하지 않습니다."
-
-If the question cannot be answered with Yes/No or completely unrelated to the story → "예, 아니오로 대답할 수 없는 질문입니다."
+**Rules:**  
+- Always respond with exactly one of the five options above.  
+- Do not provide any explanations, reasons, or additional text. 
 
 ---
 사용자 질문: "{user_question}"
