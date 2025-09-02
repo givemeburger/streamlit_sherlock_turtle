@@ -219,12 +219,7 @@ def main():
                             'content': ai_response
                         })
                         
-                        # 단서 발견 시 즉시 페이지 새로고침하여 진행상황 업데이트
-                        if "단서 발견!" in ai_response:
-                            st.success("🎉 단서를 발견했습니다!")
-                            st.rerun()
-                        else:
-                            st.rerun()
+                        st.rerun()
         
         with col2:
             st.subheader("📋 게임 정보")
