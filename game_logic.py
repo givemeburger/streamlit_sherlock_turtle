@@ -58,10 +58,11 @@ class TurtleSoupGame:
         prompt = f"""
         당신은 '바다거북수프' 게임의 게임마스터입니다.
 
-        에피소드: {self.current_episode.title}
         질문: {self.current_episode.question}
+        줄거리: {self.current_episode.answer}
+        
+        게임의 질문과 줄거리의 전체 내용을 파악하고 사용자의 질문에 다음과 같이 응답하세요.
 
-        사용자 질문: "{user_question}"
 ## Possible Outputs
 [
 "네.",
@@ -81,6 +82,10 @@ If it’s going in the wrong direction → "아니오."
 If it’s irrelevant or unimportant → "아니오. 중요하지 않습니다."
 
 If the question cannot be answered with Yes/No or completely unrelated to the story → "예, 아니오로 대답할 수 없는 질문입니다."
+
+---
+        사용자 질문: "{user_question}"
+
         """
 
         try:
