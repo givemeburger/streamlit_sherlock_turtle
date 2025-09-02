@@ -69,7 +69,6 @@ class TurtleSoupGame:
 "아니오.",
 "아니오. 중요하지 않습니다.",
 "예, 아니오로 대답할 수 없는 질문입니다.",
-"정답입니다!"
 ]
 
 ## Response Rules
@@ -81,7 +80,7 @@ If it’s going in the wrong direction → "아니오."
 
 If it’s irrelevant or unimportant → "아니오. 중요하지 않습니다."
 
-If the question cannot be answered with Yes/No → "예, 아니오로 대답할 수 없는 질문입니다."
+If the question cannot be answered with Yes/No or completely unrelated to the story → "예, 아니오로 대답할 수 없는 질문입니다."
         """
 
         try:
@@ -112,20 +111,23 @@ If the question cannot be answered with Yes/No → "예, 아니오로 대답할 
         prompt = f"""
         당신은 '바다거북수프' 게임의 게임마스터입니다.
 
-        사용자가 다음과 같은 입력을 했습니다: "{user_input}"
-
-        이 입력이 다음 중 하나의 단서와 일치하는지 판단해주세요:
+        사용자의 입력이 다음 중 하나의 단서와 일치하는지 판단해주세요:
         {self.current_episode.clues}
-
-        완벽하게 일치하지 않아도 되며, 90% 이상 일치하면 단서로 간주해줘.
-        만약 단서를 발견했다면:
+        
+        #기준
+        사용자의 입력이 단서와 90% 이상 일치하거나 맥락이 매우 일치하는 경우에만 단서를 발견한것으로 간주
+        
+        #단서 발견
         1. "단서 발견!"이라고 시작하고
-        2. 발견된 단서를 명시해
+        2. 발견된 단서를 그대로 응답해줘.
 
-        일치하지 않는다면:
-        1. "아직 단서를 찾지 못했습니다."라고 응답해.
+        #일치하지 않음
+        1. "아직 단서를 찾지 못했습니다."
 
         답변은 한국어로 해줘
+--------------------------------
+        사용자 입력: "{user_input}"
+
         """
 
         try:
