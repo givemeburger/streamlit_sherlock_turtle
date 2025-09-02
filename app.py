@@ -171,12 +171,12 @@ def main():
                         st.chat_message("assistant").write(message['content'])
             
             # 사용자 입력
-            st.subheader("🔍 질문하기 / 단서찾기")
+            st.subheader("🔍 질문하기 / 추리하기")
             
-            tab1, tab2 = st.tabs(["❓ 질문하기", "🔍 단서찾기"])
+            tab1, tab2 = st.tabs(["❓ 질문하기", "🔍 추리하기"])
             
             with tab1:
-                st.write("AI에게 질문하여 단서를 찾아보세요!")
+                st.write("질문을 통해 사건을 조사해보세요!")
                 question_input = st.text_input("질문을 입력하세요:", key="question_input")
                 if st.button("질문하기", key="question_btn"):
                     if question_input.strip():
@@ -187,7 +187,7 @@ def main():
                         })
                         
                         # AI 응답 생성
-                        with st.spinner("AI가 생각하고 있습니다..."):
+                        with st.spinner("사건을 수사하고 있습니다..."):
                             ai_response = st.session_state.game.ask_question(question_input, session_id)
                         
                         # AI 응답 추가
@@ -199,7 +199,7 @@ def main():
                         st.rerun()
             
             with tab2:
-                st.write("직접 단서를 찾아보세요!")
+                st.write("질문을 통해 얻은 정보들을 바탕으로 단서를 찾아보세요!")
                 clue_input = st.text_input("단서를 입력하세요:", key="clue_input")
                 if st.button("단서찾기", key="clue_btn"):
                     if clue_input.strip():

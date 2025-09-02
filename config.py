@@ -11,8 +11,8 @@ except Exception:
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("STREAMLIT_OPENAI_API_KEY")
 
 # 게임 설정
-GAME_TITLE = "AI 바다거북수프 게임"
-GAME_DESCRIPTION = "AI와 함께하는 추리 게임! 질문을 통해 단서를 찾아 정답을 맞춰보세요."
+GAME_TITLE = "터틀셔틀"
+GAME_DESCRIPTION = "사건을 해결해보자!"
 
 # 보안 설정
 MAX_REQUESTS_PER_SESSION = 50  # 세션당 최대 요청 수
