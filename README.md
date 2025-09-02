@@ -13,6 +13,16 @@ AI와 함께하는 추리 게임! 질문을 통해 단서를 찾아 정답을 �
 OPENAI_API_KEY=sk-your_openai_api_key_here
 ```
 
+### Streamlit Cloud 배포
+
+Streamlit Cloud에서 실행하려면:
+
+1. **GitHub에 코드 업로드**
+2. **Streamlit Cloud에서 새 앱 생성**
+3. **환경 변수 설정**:
+   - `STREAMLIT_OPENAI_API_KEY`: OpenAI API 키
+4. **메인 파일 경로**: `app.py`
+
 **API 키 발급 방법:**
 1. [OpenAI Platform](https://platform.openai.com/api-keys) 접속
 2. 로그인 후 "Create new secret key" 클릭
@@ -59,6 +69,29 @@ streamlit run app.py
 1. 프로젝트 루트에 `.env` 파일이 있는지 확인
 2. `.env` 파일에 `OPENAI_API_KEY=sk-your_key_here` 형식으로 API 키 추가
 3. 앱을 다시 시작
+
+### Streamlit Cloud에서 Import 오류가 발생하는 경우
+
+**오류 메시지**: `ModuleNotFoundError: No module named 'game_logic'`
+
+**해결 방법**:
+1. 모든 파일이 같은 디렉토리에 있는지 확인
+2. `app.py`가 메인 파일로 설정되어 있는지 확인
+3. GitHub 저장소에 모든 파일이 업로드되었는지 확인
+4. Streamlit Cloud에서 앱을 다시 배포
+
+### 환경 변수 설정 방법
+
+**로컬 실행**:
+```bash
+# .env 파일 생성
+echo "OPENAI_API_KEY=sk-your_key_here" > .env
+```
+
+**Streamlit Cloud**:
+1. 앱 설정 → Secrets
+2. `STREAMLIT_OPENAI_API_KEY` 추가
+3. 값에 OpenAI API 키 입력
 
 ### .env 파일 생성 방법
 

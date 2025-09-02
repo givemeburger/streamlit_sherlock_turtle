@@ -1,9 +1,22 @@
 import streamlit as st
 import time
-from game_logic import TurtleSoupGame
-from episodes import EPISODE_TITLES, EPISODES
-from config import GAME_TITLE, GAME_DESCRIPTION, API_KEY_VALID, API_KEY_ERROR
-from security import check_api_security, security_manager
+import sys
+import os
+
+# 현재 디렉토리를 Python 경로에 추가
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+
+try:
+    from game_logic import TurtleSoupGame
+    from episodes import EPISODE_TITLES, EPISODES
+    from config import GAME_TITLE, GAME_DESCRIPTION, API_KEY_VALID, API_KEY_ERROR
+    from security import check_api_security, security_manager
+except ImportError as e:
+    st.error(f"모듈을 불러올 수 없습니다: {e}")
+    st.error("파일 구조를 확인해주세요.")
+    st.stop()
 
 # 페이지 설정
 st.set_page_config(
@@ -14,20 +27,31 @@ st.set_page_config(
 )
 
 # 세션 상태 초기화
-if 'game' not in st.session_state:
-    st.session_state.game = TurtleSoupGame()
-if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []
+try:
+    if 'game' not in st.session_state:
+        st.session_state.game = TurtleSoupGame()
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []
+except Exception as e:
+    st.error(f"게임 초기화 중 오류가 발생했습니다: {e}")
+    st.error("페이지를 새로고침하거나 다시 시작해주세요.")
+    st.stop()
 
 def main():
-    # API 키 상태 확인
-    if not API_KEY_VALID:
-        st.error("🚫 API 키 설정 오류")
-        st.error(API_KEY_ERROR)
-        st.info("💡 해결 방법:")
-        st.info("1. 프로젝트 루트에 .env 파일을 생성하세요")
-        st.info("2. .env 파일에 OPENAI_API_KEY=sk-your_key_here를 추가하세요")
-        st.info("3. 앱을 다시 시작하세요")
+    try:
+        # API 키 상태 확인
+        if not API_KEY_VALID:
+            st.error("🚫 API 키 설정 오류")
+            st.error(API_KEY_ERROR)
+            st.info("💡 해결 방법:")
+            st.info("1. 프로젝트 루트에 .env 파일을 생성하세요")
+            st.info("2. .env 파일에 OPENAI_API_KEY=sk-your_key_here를 추가하세요")
+            st.info("3. Streamlit Cloud에서는 환경 변수로 STREAMLIT_OPENAI_API_KEY를 설정하세요")
+            st.info("4. 앱을 다시 시작하세요")
+            st.stop()
+    except Exception as e:
+        st.error(f"설정 확인 중 오류가 발생했습니다: {e}")
+        st.info("페이지를 새로고침하거나 다시 시작해주세요.")
         st.stop()
     
     # 보안 검증

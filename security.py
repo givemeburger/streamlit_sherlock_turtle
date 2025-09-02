@@ -18,9 +18,9 @@ class SecurityManager:
             return False, "🚫 이 세션은 API 남용으로 인해 차단되었습니다."
         
         # 세션당 최대 요청 수 확인
-        if self.request_counts[session_id] >= 50:
+        if self.request_counts[session_id] >= 200:
             self.blocked_sessions.add(session_id)
-            return False, "🚫 세션당 최대 요청 수(50회)를 초과했습니다."
+            return False, "🚫 세션당 최대 요청 수(200회)를 초과했습니다."
         
         # 분당 최대 요청 수 확인
         timestamps = self.request_timestamps[session_id]

@@ -2,10 +2,13 @@ import os
 from dotenv import load_dotenv
 
 # .env 파일 로드 (선택적)
-load_dotenv()
+try:
+    load_dotenv()
+except Exception:
+    pass  # .env 파일이 없어도 계속 진행
 
-# OpenAI API 키 설정
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+# OpenAI API 키 설정 (Streamlit Cloud 환경 변수도 확인)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("STREAMLIT_OPENAI_API_KEY")
 
 # 게임 설정
 GAME_TITLE = "AI 바다거북수프 게임"
