@@ -61,17 +61,16 @@ You are the judge of the Sea Turtle Soup game.
         질문: {self.current_episode.question}
         줄거리: {self.current_episode.answer}
         
-For each question, you must reply with **exactly one** of the following options:  
-
+Answer each question with *exactly one* of these five:  
 - "네." → True and related to the story  
 - "네, 아주 중요한 질문입니다." → True and highly related to the story  
 - "아니오." → False but related to the story  
+- "아니오. 아주 중요한 질문입니다." → False and highly related to the story  
 - "아니오. 중요하지 않습니다." → False and unrelated to the story  
-- "예, 아니오로 대답할 수 없는 질문입니다." → The question cannot be answered with Yes/No 
+- "예, 아니오로 대답할 수 없는 질문입니다." → Cannot be answered with Yes/No 
 
 **Rules:**  
-- Always respond with exactly one of the five options above.  
-- Do not provide any explanations, reasons, or additional text. 
+If the question is open-ended (e.g. "who," "what"), but can be reasonably rephrased into Yes/No form, reinterpret it and judge accordingly.
 
 ---
 사용자 질문: "{user_question}"
@@ -104,29 +103,24 @@ For each question, you must reply with **exactly one** of the following options:
             return f"🚫 AI 서비스를 사용할 수 없습니다: {self.api_error}"
 
         prompt = f"""
-        당신은 '바다거북수프' 게임의 게임마스터입니다.
+You are the judge of the Sea Turtle Soup game.  
 
-        사용자의 입력이 다음 중 하나의 단서와 일치하는지 판단해주세요:
-        {self.current_episode.clues}
-        
-        #단서 발견 기준
-        1. 사용자의 입력이 단서와 88% 이상 일치
-        2. 단어나 표현이 달라도 맥락이 일치
-        
-        #단서 발견
-        1. "단서 발견!"
-        2. 발견한 단서가 무엇인지 데이터에 있는 그대로 응답해줘.
+Rules :
+- Matching criteria:  
+  - If similarity ≥ 85% OR the meaning/context is the same → Output:  
+    "단서 발견!"  
+    Then print matched clues exactly as they appear in the data.  
+  - If similarity ≥ 75% but < 85% → Output:  
+    "거의 찾았어요!"  
+  - If no clue matches → Output:  
+    "추리에 실패했습니다."
 
-        #일치하지 않음
-        1. "추리에 실패했습니다."
-
-        # 예외
-        사용자의 입력이 단서와 80% 이상 일치하는 경우
-        1. "거의 찾았어요!" 
-
-        답변은 한국어로 해줘
+Important:  
+- The output must be only in Korean, using exactly the above phrases.  
+- Do not explain or add anything beyond the required output. 
 --------------------------------
-        사용자 입력: "{user_input}"
+    Clue list: {self.current_episode.clues}
+    User input: "{user_input}"
 
         """
 
@@ -143,17 +137,16 @@ For each question, you must reply with **exactly one** of the following options:
             
             # 단서 발견 여부 확인
             if "단서 발견!" in ai_response:
-                # AI 응답에서 발견된 단서를 정확히 찾기
-                found_clue = None
+                # AI 응답에서 발견된 단서들을 모두 찾기
+                found_clues = []
                 
                 # 1. AI 응답에서 직접 단서 내용을 찾기
                 for clue in self.current_episode.clues:
                     if clue not in self.found_clues and clue in ai_response:
-                        found_clue = clue
-                        break
+                        found_clues.append(clue)
                 
                 # 2. AI 응답에서 단서를 찾지 못한 경우, 사용자 입력과 단서를 비교
-                if not found_clue:
+                if not found_clues:
                     for clue in self.current_episode.clues:
                         if clue not in self.found_clues:
                             # 더 정확한 매칭을 위한 다양한 방법 시도
@@ -164,12 +157,13 @@ For each question, you must reply with **exactly one** of the following options:
                             common_words = user_words.intersection(clue_words)
                             if (len(common_words) >= 2 or 
                                 any(keyword in clue.lower() for keyword in user_input.lower().split()) or
-                                any(keyword in user_input.lower() for keyword in clue.lower().split())):
-                                found_clue = clue
-                                break
+                                any(keyword in user_input.lower() for keyword in clue_words)):
+                                found_clues.append(clue)
                 
-                if found_clue:
-                    self.found_clues.add(found_clue)
+                # 발견된 모든 단서를 추가
+                if found_clues:
+                    for clue in found_clues:
+                        self.found_clues.add(clue)
                     
                     # 모든 단서를 찾았는지 확인
                     if len(self.found_clues) == len(self.current_episode.clues):
