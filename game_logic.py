@@ -84,7 +84,7 @@ If it’s irrelevant or unimportant → "아니오. 중요하지 않습니다."
 If the question cannot be answered with Yes/No or completely unrelated to the story → "예, 아니오로 대답할 수 없는 질문입니다."
 
 ---
-        사용자 질문: "{user_question}"
+사용자 질문: "{user_question}"
 
         """
 
@@ -120,14 +120,14 @@ If the question cannot be answered with Yes/No or completely unrelated to the st
         {self.current_episode.clues}
         
         #기준
-        사용자의 입력이 단서와 90% 이상 일치하거나 맥락이 매우 일치하는 경우에만 단서를 발견한것으로 간주
+        사용자의 입력이 단서와 90% 이상 일치하거나 단어나 표현이 달라도 맥락이 일치하는 경우에만 단서를 발견한것으로 간주
         
         #단서 발견
         1. "단서 발견!"이라고 시작하고
-        2. 발견된 단서를 그대로 응답해줘.
+        2. 발견한 단서가 무엇인지 데이터에 있는 그대로 응답해줘.
 
         #일치하지 않음
-        1. "아직 단서를 찾지 못했습니다."
+        1. "추리에 실패했습니다."
 
         답변은 한국어로 해줘
 --------------------------------
