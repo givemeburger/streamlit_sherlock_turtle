@@ -93,6 +93,9 @@ def main():
                 st.progress(progress['progress_percentage'] / 100)
                 st.write(f"단서: {progress['found_clues']}/{progress['total_clues']}")
                 
+                # 디버깅 정보 (개발 중에만 표시)
+                st.info(f"진행률: {progress['progress_percentage']:.1f}%")
+                
                 if progress['found_clues_list']:
                     st.write("**발견된 단서:**")
                     for clue in progress['found_clues_list']:
@@ -101,7 +104,7 @@ def main():
                 if progress['remaining_clues']:
                     st.write("**남은 단서:**")
                     for clue in progress['remaining_clues']:
-                        st.write(f"❓")
+                        st.write(f"❓ ")
             
             # 게임 리셋
             if st.button("🔄 새 게임"):
@@ -216,7 +219,12 @@ def main():
                             'content': ai_response
                         })
                         
-                        st.rerun()
+                        # 단서 발견 시 즉시 페이지 새로고침하여 진행상황 업데이트
+                        if "단서 발견!" in ai_response:
+                            st.success("🎉 단서를 발견했습니다!")
+                            st.rerun()
+                        else:
+                            st.rerun()
         
         with col2:
             st.subheader("📋 게임 정보")

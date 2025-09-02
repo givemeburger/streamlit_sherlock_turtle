@@ -143,15 +143,37 @@ If the question cannot be answered with Yes/No or completely unrelated to the st
             
             # 단서 발견 여부 확인
             if "단서 발견!" in ai_response:
-                # 발견된 단서 찾기
+                # AI 응답에서 발견된 단서를 정확히 찾기
+                found_clue = None
+                
+                # 1. AI 응답에서 직접 단서 내용을 찾기
                 for clue in self.current_episode.clues:
-                    if clue not in self.found_clues and clue.lower() in user_input.lower():
-                        self.found_clues.add(clue)
+                    if clue not in self.found_clues and clue in ai_response:
+                        found_clue = clue
                         break
                 
-                # 모든 단서를 찾았는지 확인
-                if len(self.found_clues) == len(self.current_episode.clues):
-                    self.game_state = "finished"
+                # 2. AI 응답에서 단서를 찾지 못한 경우, 사용자 입력과 단서를 비교
+                if not found_clue:
+                    for clue in self.current_episode.clues:
+                        if clue not in self.found_clues:
+                            # 더 정확한 매칭을 위한 다양한 방법 시도
+                            user_words = set(user_input.lower().split())
+                            clue_words = set(clue.lower().split())
+                            
+                            # 공통 단어가 2개 이상이거나, 핵심 단어가 포함된 경우
+                            common_words = user_words.intersection(clue_words)
+                            if (len(common_words) >= 2 or 
+                                any(keyword in clue.lower() for keyword in user_input.lower().split()) or
+                                any(keyword in user_input.lower() for keyword in clue.lower().split())):
+                                found_clue = clue
+                                break
+                
+                if found_clue:
+                    self.found_clues.add(found_clue)
+                    
+                    # 모든 단서를 찾았는지 확인
+                    if len(self.found_clues) == len(self.current_episode.clues):
+                        self.game_state = "finished"
             
             return ai_response
         except Exception as e:
