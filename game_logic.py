@@ -60,13 +60,28 @@ class TurtleSoupGame:
 
         에피소드: {self.current_episode.title}
         질문: {self.current_episode.question}
-        발견된 단서: {', '.join(self.found_clues) if self.found_clues else '없음'}
-        총 단서 수: {len(self.current_episode.clues)}개
 
         사용자 질문: "{user_question}"
+## Possible Outputs
+[
+"네.",
+"네, 아주 중요한 질문입니다.",
+"아니오.",
+"아니오. 중요하지 않습니다.",
+"예, 아니오로 대답할 수 없는 질문입니다.",
+"정답입니다!"
+]
 
-        이 질문에 대해 Yes/No로 답변하거나, 단서를 찾는 데 도움이 되는 힌트를 제공해주세요.
-        답변은 한국어로 해주시고, 2-3문장으로 간결하게 작성해주세요.
+## Response Rules
+If the question is moving in the right direction → "네."
+
+If it’s on the right track and reveals a critical clue → "네, 아주 중요한 질문입니다."
+
+If it’s going in the wrong direction → "아니오."
+
+If it’s irrelevant or unimportant → "아니오. 중요하지 않습니다."
+
+If the question cannot be answered with Yes/No → "예, 아니오로 대답할 수 없는 질문입니다."
         """
 
         try:
