@@ -76,7 +76,6 @@ class TurtleSoupGame:
                     {"role": "system", "content": "당신은 '바다거북수프' 게임의 게임마스터입니다."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.7
             )
             return response.choices[0].message.content
         except Exception as e:
