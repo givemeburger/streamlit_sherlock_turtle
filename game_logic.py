@@ -119,6 +119,10 @@ For each question, you must reply with **exactly one** of the following options:
         #일치하지 않음
         1. "추리에 실패했습니다."
 
+        # 예외
+        사용자의 입력이 단서와 80% 이상 일치하는 경우
+        1. "거의 찾았어요!" 
+
         답변은 한국어로 해줘
 --------------------------------
         사용자 입력: "{user_input}"
