@@ -176,7 +176,8 @@ def main():
                 )
                 
                 # 디버깅: 조사 횟수 표시
-                st.info(f"🔍 조사 횟수: {st.session_state.game.question_count}회")
+                question_count = getattr(st.session_state.game, 'question_count', 0)
+                st.info(f"🔍 조사 횟수: {question_count}회")
                 
                 if progress['found_clues_list']:
                     st.write("**발견된 단서:**")
@@ -249,7 +250,9 @@ def main():
                     
                     # AI 응답 생성 (통합 프롬프트)
                     with st.spinner("사건을 조사하고 있습니다..."):
-                        # 조사 횟수 증가
+                        # 조사 횟수 증가 (안전하게 접근)
+                        if not hasattr(st.session_state.game, 'question_count'):
+                            st.session_state.game.question_count = 0
                         st.session_state.game.question_count += 1
                         # 통합 조사 메서드 호출
                         ai_response = st.session_state.game.investigate(investigation_input, session_id)
