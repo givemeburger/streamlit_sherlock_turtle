@@ -155,94 +155,16 @@ def main():
                         break
     
     elif st.session_state.game.game_state == "playing":
-        # 게임 인터페이스
+        # 게임 인터페이스 - 세로 배치
         col1, col2 = st.columns([2, 1])
         
         with col1:
-            st.subheader("💬 게임 진행")
-            
-            # 채팅 히스토리 표시
-            chat_container = st.container()
-            with chat_container:
-                for message in st.session_state.chat_history:
-                    if message['type'] == 'user':
-                        st.chat_message("user").write(message['content'])
-                    else:
-                        st.chat_message("assistant").write(message['content'])
-            
-            # 사용자 입력
-            st.subheader("🔍 질문하기 / 추리하기")
-            
-            tab1, tab2 = st.tabs(["❓ 질문하기", "🔍 추리하기"])
-            
-            with tab1:
-                st.write("질문을 통해 사건을 조사해보세요!")
-                question_input = st.text_input("질문을 입력하세요:", key="question_input")
-                if st.button("질문하기", key="question_btn"):
-                    if question_input.strip():
-                        # 사용자 메시지 추가
-                        st.session_state.chat_history.append({
-                            'type': 'user',
-                            'content': f"❓ {question_input}"
-                        })
-                        
-                        # AI 응답 생성
-                        with st.spinner("사건을 수사하고 있습니다..."):
-                            ai_response = st.session_state.game.ask_question(question_input, session_id)
-                        
-                        # AI 응답 추가
-                        st.session_state.chat_history.append({
-                            'type': 'assistant',
-                            'content': ai_response
-                        })
-                        
-                        st.rerun()
-            
-            with tab2:
-                st.write("질문을 통해 얻은 정보들을 바탕으로 단서를 찾아보세요!")
-                clue_input = st.text_input("단서를 입력하세요:", key="clue_input")
-                if st.button("단서찾기", key="clue_btn"):
-                    if clue_input.strip():
-                        # 사용자 메시지 추가
-                        st.session_state.chat_history.append({
-                            'type': 'user',
-                            'content': f"🔍 {clue_input}"
-                        })
-                        
-                        # AI 응답 생성
-                        with st.spinner("단서를 확인하고 있습니다..."):
-                            ai_response = st.session_state.game.find_clue(clue_input, session_id)
-                        
-                        # AI 응답 추가
-                        st.session_state.chat_history.append({
-                            'type': 'assistant',
-                            'content': ai_response
-                        })
-                        
-                        # 단서 발견 시 즉시 페이지 새로고침하여 진행상황 업데이트
-                        if "단서 발견!" in ai_response:
-                            # 발견된 단서 개수 확인
-                            progress = st.session_state.game.get_game_progress()
-                            if progress:
-                                before_count = progress['found_clues'] - 1  # 현재 추가된 단서 제외
-                                after_count = progress['found_clues']
-                                if after_count > before_count:
-                                    st.success(f"🎉 {after_count - before_count}개의 단서를 발견했습니다!")
-                                else:
-                                    st.success("🎉 단서를 발견했습니다!")
-                            else:
-                                st.success("🎉 단서를 발견했습니다!")
-                            st.rerun()
-                        else:
-                            st.rerun()
-        
-        with col2:
-            st.subheader("📋 게임 정보")
-            
+            # 에피소드 정보
             episode_info = st.session_state.game.get_current_episode_info()
             if episode_info:
-                st.info(f"**현재 에피소드:** {episode_info['title']}")
-                st.write(f"**질문:** {episode_info['question']}")
+                st.subheader(f"📖 {episode_info['title']}")
+                st.write(f"**사건:** {episode_info['question']}")
+                st.divider()
             
             # 진행 상황
             progress = st.session_state.game.get_game_progress()
@@ -253,10 +175,129 @@ def main():
                     delta=f"{progress['progress_percentage']:.1f}%"
                 )
                 
+                # 디버깅: 조사 횟수 표시
+                st.info(f"🔍 조사 횟수: {st.session_state.game.question_count}회")
+                
                 if progress['found_clues_list']:
                     st.write("**발견된 단서:**")
                     for clue in progress['found_clues_list']:
                         st.success(f"✅ {clue}")
+            
+            st.divider()
+            
+            # 채팅 히스토리 표시 (넓은 영역)
+            st.subheader("💬 대화 기록")
+            chat_container = st.container()
+            with chat_container:
+                for message in st.session_state.chat_history:
+                    if message['type'] == 'user':
+                        st.chat_message("user").write(message['content'])
+                    else:
+                        st.chat_message("assistant").write(message['content'])
+        
+        with col2:
+            # 게임 정보 표시 (토글)
+            if st.session_state.get('show_game_info', False):
+                with st.expander("📖 게임 정보", expanded=True):
+                    episode_info = st.session_state.game.get_current_episode_info()
+                    if episode_info:
+                        st.write(f"**에피소드:** {episode_info['title']}")
+                        st.write(f"**사건:** {episode_info['question']}")
+                        
+                        # 정답 미리보기 (게임 완료 시에만)
+                        if st.session_state.game.game_state == "finished":
+                            st.write(f"**정답:** {st.session_state.game.current_episode.answer}")
+                        else:
+                            st.write("**정답:** 게임 완료 후 확인 가능")
+                    
+                    st.divider()
+                    
+                    # 게임 방법 안내
+                    st.write("**🎮 게임 방법:**")
+                    st.write("1. **조사하기**: 질문이나 단서를 입력")
+                    st.write("2. **질문 예시**: '남자는 왜 죽었을까요?'")
+                    st.write("3. **단서 예시**: '금붕어가 물을 마셨다'")
+                    st.write("4. **목표**: 모든 단서를 찾아 정답 도출")
+                    
+                    st.divider()
+                    
+                    # AI 응답 가이드
+                    st.write("**🤖 AI 응답 가이드:**")
+                    st.write("• **네.** - 맞는 방향")
+                    st.write("• **네, 아주 중요한 질문입니다.** - 핵심 단서 발견")
+                    st.write("• **아니오.** - 틀린 방향")
+                    st.write("• **아니오. 중요하지 않습니다.** - 관련 없음")
+                    st.write("• **예, 아니오로 대답할 수 없는 질문입니다.** - 재질문 필요")
+        
+        # 조사하기 섹션 - 전체 너비로 배치
+        st.subheader("🔍 조사하기")
+        
+        st.write("질문을 통해 사건을 조사하거나, 단서를 찾아보세요!")
+        st.info("💡 **팁**: '남자는 왜 죽었을까요?' 같은 질문이나 '금붕어가 물을 마셨다' 같은 단서를 입력해보세요!")
+        
+        investigation_input = st.text_input("조사 내용을 입력하세요:", key="investigation_input", placeholder="예: 남자는 왜 죽었을까요? 또는 금붕어가 물을 마셨다", max_chars=30)
+        
+        col1_btn, col2_btn, col3_btn = st.columns([1, 1, 1])
+        with col1_btn:
+            if st.button("🔍 조사하기", key="investigate_btn", type="primary"):
+                if investigation_input.strip():
+                    # 사용자 메시지 추가
+                    st.session_state.chat_history.append({
+                        'type': 'user',
+                        'content': f"🔍 {investigation_input}"
+                    })
+                    
+                    # AI 응답 생성 (통합 프롬프트)
+                    with st.spinner("사건을 조사하고 있습니다..."):
+                        # 조사 횟수 증가
+                        st.session_state.game.question_count += 1
+                        # 통합 조사 메서드 호출
+                        ai_response = st.session_state.game.investigate(investigation_input, session_id)
+                    
+                    # AI 응답 추가
+                    st.session_state.chat_history.append({
+                        'type': 'assistant',
+                        'content': ai_response
+                    })
+                    
+                    # 단서 발견 시 즉시 페이지 새로고침하여 진행상황 업데이트
+                    if "단서 발견!" in ai_response:
+                        # 발견된 단서 개수 확인
+                        progress = st.session_state.game.get_game_progress()
+                        if progress:
+                            before_count = progress['found_clues'] - 1  # 현재 추가된 단서 제외
+                            after_count = progress['found_clues']
+                            if after_count > before_count:
+                                st.success(f"🎉 {after_count - before_count}개의 단서를 발견했습니다!")
+                            else:
+                                st.success("🎉 단서를 발견했습니다!")
+                        else:
+                            st.success("🎉 단서를 발견했습니다!")
+                        st.rerun()
+                    else:
+                        st.rerun()
+        
+        with col2_btn:
+            if st.button("💰 유료 힌트", key="paid_hint_btn", type="secondary"):
+                # 유료 힌트 제공
+                hint_response = st.session_state.game.get_paid_hint()
+                
+                # 힌트 응답 추가
+                st.session_state.chat_history.append({
+                    'type': 'assistant',
+                    'content': hint_response
+                })
+                
+                # 모든 유료 힌트 사용 완료 시 토스트 메시지
+                if "모든 유료 힌트를 사용했습니다" in hint_response:
+                    st.warning("모든 유료 힌트를 사용했습니다")
+                
+                st.rerun()
+        
+        with col3_btn:
+            if st.button("🗑️ 대화 초기화", key="clear_btn"):
+                st.session_state.chat_history = []
+                st.rerun()
     
     elif st.session_state.game.game_state == "finished":
         st.success("🎉 축하합니다! 모든 단서를 찾았습니다!")
