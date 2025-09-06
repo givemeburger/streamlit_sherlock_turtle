@@ -264,7 +264,7 @@ def main():
                     })
                     
                     # 단서 발견 시 즉시 페이지 새로고침하여 진행상황 업데이트
-                    if "단서 발견!" in ai_response:
+                    if "단서를 찾았습니다!" in ai_response or "단서 발견!" in ai_response:
                         # 발견된 단서 개수 확인
                         progress = st.session_state.game.get_game_progress()
                         if progress:
